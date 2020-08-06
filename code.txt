@@ -1,0 +1,13 @@
+def func:
+printpop
+end
+int 4
+int 4
++
+sqrt
+jmp func
+str hello
+jmp func
+str 234
+jmp func
+jmp func 	
