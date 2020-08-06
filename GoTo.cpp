@@ -1,5 +1,3 @@
-
-
 #include <iostream>
 #include <map>
 #include <string>
@@ -26,14 +24,14 @@ enum class Vtype {
 };
 struct typevariable
 {
-    // Одно из полей заполнено (соответственно типу - INT или STR)
+    // РћРґРЅРѕ РёР· РїРѕР»РµР№ Р·Р°РїРѕР»РЅРµРЅРѕ (СЃРѕРѕС‚РІРµС‚СЃС‚РІРµРЅРЅРѕ С‚РёРїСѓ - INT РёР»Рё STR)
     int i;
     string s;
 
-    // Тип ячейки
+    // РўРёРї СЏС‡РµР№РєРё
     Vtype type;
 
-    // Преобразовать в int (если тип INT)
+    // РџСЂРµРѕР±СЂР°Р·РѕРІР°С‚СЊ РІ int (РµСЃР»Рё С‚РёРї INT)
     operator int()
     {
         if (type == Vtype::INT)
@@ -41,7 +39,7 @@ struct typevariable
         return -1;
     }
 
-    // Преобразовать в string (если тип STR)
+    // РџСЂРµРѕР±СЂР°Р·РѕРІР°С‚СЊ РІ string (РµСЃР»Рё С‚РёРї STR)
     operator string()
     {
         if (type == Vtype::STR)
@@ -49,7 +47,7 @@ struct typevariable
         return "";
     }
 
-    // Конструктор из int
+    // РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ РёР· int
     typevariable(int ival)
         : i(ival)
         , s()
@@ -57,7 +55,7 @@ struct typevariable
     {
     }
 
-    // Конструктор из string
+    // РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ РёР· string
     typevariable(const string& sval)
         : i(0)
         , s(sval)
@@ -65,7 +63,7 @@ struct typevariable
     {
     }
 
-    // Пустая клетка
+    // РџСѓСЃС‚Р°СЏ РєР»РµС‚РєР°
     typevariable()
         : i(0)
         , s("")
@@ -73,7 +71,7 @@ struct typevariable
     {
     }
 
-    // Перевести в строку (если строка - вернуть её же, если число - закавычить)
+    // РџРµСЂРµРІРµСЃС‚Рё РІ СЃС‚СЂРѕРєСѓ (РµСЃР»Рё СЃС‚СЂРѕРєР° - РІРµСЂРЅСѓС‚СЊ РµС‘ Р¶Рµ, РµСЃР»Рё С‡РёСЃР»Рѕ - Р·Р°РєР°РІС‹С‡РёС‚СЊ)
     string printable()
     {
         if (type == Vtype::INT)
@@ -82,7 +80,7 @@ struct typevariable
     }
 };
 
-// Сложение (если INT) или конкатенация (если STR)
+// РЎР»РѕР¶РµРЅРёРµ (РµСЃР»Рё INT) РёР»Рё РєРѕРЅРєР°С‚РµРЅР°С†РёСЏ (РµСЃР»Рё STR)
 typevariable operator+(const typevariable& a, const typevariable& b) {
     if (a.type != b.type)
         return -1;
@@ -100,7 +98,7 @@ typevariable operator+(const typevariable& a, const typevariable& b) {
     }
 }
 
-// Разность (только для INT)
+// Р Р°Р·РЅРѕСЃС‚СЊ (С‚РѕР»СЊРєРѕ РґР»СЏ INT)
 typevariable operator-(const typevariable& a, const typevariable& b)
 {
     if (a.type != Vtype::INT || b.type != Vtype::INT)
@@ -175,7 +173,7 @@ struct fixed_stack
 };
 class run {
 private:
-    // Исходный код
+    // РСЃС…РѕРґРЅС‹Р№ РєРѕРґ
     vector <string> source_code_;
 
     map <string,int> func_code;
@@ -186,18 +184,18 @@ private:
 
     fixed_stack mem_;
 
-    // Позиция в исходнике на которой остановились
+    // РџРѕР·РёС†РёСЏ РІ РёСЃС…РѕРґРЅРёРєРµ РЅР° РєРѕС‚РѕСЂРѕР№ РѕСЃС‚Р°РЅРѕРІРёР»РёСЃСЊ
     size_t pos_ = 0;
 
     int func_pos = -1;
 
-    // Исполнить строку line. Если произошла блокировка, false.
+    // РСЃРїРѕР»РЅРёС‚СЊ СЃС‚СЂРѕРєСѓ line. Р•СЃР»Рё РїСЂРѕРёР·РѕС€Р»Р° Р±Р»РѕРєРёСЂРѕРІРєР°, false.
     bool step(const string& line);
 
     //map<string, typevariable*> variables;
 
 public:
-    // Конструктор, инициализирующий внутренние переменные
+    // РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ, РёРЅРёС†РёР°Р»РёР·РёСЂСѓСЋС‰РёР№ РІРЅСѓС‚СЂРµРЅРЅРёРµ РїРµСЂРµРјРµРЅРЅС‹Рµ
     run(string fname)
     {
         ifstream SourceFile(fname);
@@ -214,7 +212,7 @@ public:
 
     }
 
-    // Выполнить следующие num_steps строк исходника (false, если закончил исполнение)
+    // Р’С‹РїРѕР»РЅРёС‚СЊ СЃР»РµРґСѓСЋС‰РёРµ num_steps СЃС‚СЂРѕРє РёСЃС…РѕРґРЅРёРєР° (false, РµСЃР»Рё Р·Р°РєРѕРЅС‡РёР» РёСЃРїРѕР»РЅРµРЅРёРµ)
     bool exec() 
     {
         while (!stop)
@@ -296,7 +294,7 @@ public:
 
 bool run::step(const string& line)
 {
-    // Завести переменные
+    // Р—Р°РІРµСЃС‚Рё РїРµСЂРµРјРµРЅРЅС‹Рµ
     if (line.rfind("int", 0) == 0) 
     {
         int ch = 4;
@@ -335,73 +333,73 @@ bool run::step(const string& line)
     }
 
     
-    // Арифметика
-    else if (line.rfind("+",0) == 0)
+    // РђСЂРёС„РјРµС‚РёРєР°
+    else if (line.rfind("+", 0) == 0)
     {
         typevariable a = mem_.pop();
         typevariable b = mem_.pop();
 
         mem_.push(a + b);
     }
-    else if (line == "-")
+    else if (line.rfind("-", 0) == 0)
     {
         typevariable a = mem_.pop();
         typevariable b = mem_.pop();
 
         mem_.push(a - b);
     }
-    else if (line == "%")
+    else if (line.rfind("%", 0) == 0)
     {
         typevariable a = mem_.pop();
         typevariable b = mem_.pop();
 
         mem_.push(a % b);
     }
-    else if (line == "/")
+    else if (line.rfind("/", 0) == 0)
     {
         typevariable a = mem_.pop();
         typevariable b = mem_.pop();
 
         mem_.push(a / b);
     }
-    else if (line == "*")
+    else if (line.rfind("*", 0) == 0)
     {
         typevariable a = mem_.pop();
         typevariable b = mem_.pop();
 
         mem_.push(a * b);
     }
-    else if (line == "inc")
+    else if (line.rfind("inc", 0) == 0)
 
     {
         typevariable a = mem_.pop();
         mem_.push(a.i + 1);
     }
-    else if (line == "dec")
+    else if (line.rfind("dec", 0) == 0)
     {
         typevariable a = mem_.pop();
         mem_.push(a.i - 1);
     }
-    else if (line == "sqrt")
+    else if (line.rfind("sqrt", 0) == 0)
     {
         typevariable a = mem_.pop();
         mem_.push(pow(a.i, 2));
     }
 
-    // Сервисные функции
-    else if (line == "dup") {
+    // РЎРµСЂРІРёСЃРЅС‹Рµ С„СѓРЅРєС†РёРё
+    else if (line.rfind("dup", 0) == 0) {
         typevariable a = mem_.top();
         mem_.push(a);
     }
-    else if (line == "swap") {
+    else if (line.rfind("swap", 0) == 0) {
         typevariable a = mem_.top();
         mem_.push(a);
     }
-    else if (line == "pop")
+    else if (line.rfind("pop", 0) == 0)
     {
         mem_.pop();
     }
-    else if (line == "print")
+    else if (line.rfind("print", 0) == 0)
     {
         if (mem_.top().s.empty()) 
         {
@@ -412,7 +410,7 @@ bool run::step(const string& line)
             cout << mem_.top().s << endl;
         }
     }
-    else if (line == "printpop")
+    else if (line.rfind("printpop",0) == 0)
     {
         if (mem_.top().s.empty())
         {
@@ -422,6 +420,12 @@ bool run::step(const string& line)
         {
             cout << mem_.pop().s << endl;
         }
+    }
+    else if (line.rfind("recv", 0) == 0)
+    {
+        typevariable a;
+        cin >> a.s;
+        mem_.push(a);
     }
     else if (line == "stop")
     {
@@ -457,8 +461,7 @@ bool run::step(const string& line)
     }
     else if (line.rfind("jge", 0) == 0) 
     {
-        // Step 1
-        // Fill me in
+      
     }
     else if (line.rfind("jl", 0) == 0) 
     {
@@ -473,7 +476,7 @@ bool run::step(const string& line)
 
     }
 
-    // Остальное
+    // РћСЃС‚Р°Р»СЊРЅРѕРµ
     else if (line.rfind("   ") || line.rfind("  ")) {}
     else if (line.rfind("pass", 0) == 0) {}
 
