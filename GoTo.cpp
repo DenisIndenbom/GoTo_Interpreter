@@ -449,9 +449,8 @@ bool run::step(const string& line)
     }
 
     // Остальное
-    else if (line.rfind("   ") || line.rfind("  ")) {}
+    else if (line.rfind("   ") || line.rfind(" ") || line.rfind("")) {}
     else if (line.rfind("pass", 0) == 0) {}
-
     else 
     {
         cout << "InvalidSyntex: " << line << " line:" << pos_ << endl;
