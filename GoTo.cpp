@@ -5,7 +5,9 @@
 #include <fstream>
 #include <vector>
 using namespace std;
+
 bool stop = false;
+
 bool isnumber(const string& s)
 {
     for (int cycle = 0; cycle < s.size() - 1; cycle++)
@@ -17,7 +19,8 @@ bool isnumber(const string& s)
     }
     return true;
 }
-enum class Vtype {
+enum class Vtype 
+{
     NONE = 0,
     INT = 1,
     STR = 2
@@ -102,6 +105,8 @@ typevariable operator+(const typevariable& a, const typevariable& b) {
 typevariable operator-(const typevariable& a, const typevariable& b)
 {
     if (a.type != Vtype::INT || b.type != Vtype::INT)
+        cout << "TypeError: string can't - integer" << endl;
+        stop = true;
         return -1;
     return a.i - b.i;
 }
@@ -109,18 +114,24 @@ typevariable operator-(const typevariable& a, const typevariable& b)
 typevariable operator/(const typevariable& a, const typevariable& b)
 {
     if (a.type != Vtype::INT || b.type != Vtype::INT)
+        cout << "TypeError: string can't / integer" << endl;
+        stop = true;
         return -1;
     return a.i / b.i;
 }
 typevariable operator*(const typevariable& a, const typevariable& b)
 {
     if (a.type != Vtype::INT || b.type != Vtype::INT)
+        cout << "TypeError: string can't - integer" << endl;
+        stop = true;
         return -1;
     return a.i * b.i;
 }
 typevariable operator%(const typevariable& a, const typevariable& b)
 {
     if (a.type != Vtype::INT || b.type != Vtype::INT)
+        cout << "TypeError: string can't % integer" << endl;
+        stop = true;
         return -1;
     return a.i % b.i;
 }
@@ -171,7 +182,8 @@ struct fixed_stack
 
     }
 };
-class run {
+class run 
+{
 private:
     // Исходный код
     vector <string> source_code_;
@@ -281,7 +293,6 @@ public:
         {
             func_pos = -1;
             run_func = false;
-            
         }
         else 
         {
@@ -373,12 +384,14 @@ bool run::step(const string& line)
 
     {
         typevariable a = mem_.pop();
-        mem_.push(a.i + 1);
+        typevariable b = 1;
+        mem_.push(a + b);
     }
     else if (line.rfind("dec", 0) == 0)
     {
         typevariable a = mem_.pop();
-        mem_.push(a.i - 1);
+        typevariable b = 1;
+        mem_.push(a - b);
     }
     else if (line.rfind("sqrt", 0) == 0)
     {
