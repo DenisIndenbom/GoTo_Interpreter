@@ -149,6 +149,12 @@ struct fixed_stack
     void push(typevariable val)
     {
         back += 1;
+        if (back > Stack.size() - 1) 
+        {
+            cout << "StackError: stack overflow" << endl;
+            stop = true;
+            return;
+        }
         Stack[back] = val;
     }
     typevariable top()
@@ -175,7 +181,7 @@ struct fixed_stack
         {
             cout << "StackError: stack is empty" << endl;
             stop = true;
-            return 0;
+            return -1;
         }
         
         
@@ -188,18 +194,12 @@ private:
     // Исходный код
     vector <string> source_code_;
 
-    map <string,int> func_code;
-
-    bool run_func = false;
-
-    bool dont_run_code = false;
+    map <string,int> placemarks;
 
     fixed_stack mem_;
 
     // Позиция в исходнике на которой остановились
     size_t pos_ = 0;
-
-    int func_pos = -1;
 
     // Исполнить строку line. Если произошла блокировка, false.
     bool step(const string& line);
@@ -229,76 +229,38 @@ public:
     {
         while (!stop)
         {
-            
-            if (run_func) 
+            if (pos_ < source_code_.size() && source_code_[pos_].rfind(":", 0) == 0  )
             {
-                exec_func();
-            }
-            else if (dont_run_code) 
-            {
-                if (source_code_[pos_].rfind("end",0) == 0) 
-                {
-                    dont_run_code = false;
-                }
-            }
-            else if (pos_ < source_code_.size() && source_code_[pos_].rfind("def", 0) == 0  )
-            {
-                string funcname = "";
-                int g = 4;
+                string markname = "";
+                int g = 5;
                 while (true)
                 {
-                    if (g < source_code_[pos_].size()-1)
+                    if (g < source_code_[pos_].size() - 1)
                     {
-                        funcname += source_code_[pos_][g];
+                        markname += source_code_[pos_][g];
                     }
-                    else if (source_code_[pos_][g] == ':')
-                    {
-                        break;
-                    }
-                    else
-                    {
-                        cout << "SyntexError: line don't have ':' in line " << source_code_[pos_];
-                    }
+                    else break;
                     g++;
                 }
-                func_code[funcname] = pos_;
-                dont_run_code = true;
+                placemarks[markname] = pos_;
+            }
+
+            if (pos_ < source_code_.size())
+            {
+                if (!step(source_code_[pos_]))
+                {
+                    break;
+                }
             }
             else
             {
-                if (pos_ < source_code_.size())
-                {
-                    if (!step(source_code_[pos_]))
-                    {
-                        break;
-                    }
-                }
-                else
-                {
-                    return false;
-                }
+                return false;
             }
-            if (!run_func)
-            {
-                pos_ += 1;
-            }
+            
+            pos_ += 1;
 
         }
-    return true;
-    }
-    void exec_func() 
-    {
-        func_pos += 1;
-        if (source_code_[func_pos].rfind("end",0) == 0)
-        {
-            func_pos = -1;
-            run_func = false;
-        }
-        else 
-        {
-            step(source_code_[func_pos]);
-        }
-
+        return true;
     }
 };
     
@@ -412,17 +374,6 @@ bool run::step(const string& line)
     {
         mem_.pop();
     }
-    else if (line.rfind("print", 0) == 0)
-    {
-        if (mem_.top().s.empty()) 
-        {
-            cout << mem_.top().i << endl;
-        }
-        else 
-        {
-            cout << mem_.top().s << endl;
-        }
-    }
     else if (line.rfind("printpop",0) == 0)
     {
         if (mem_.top().s.empty())
@@ -433,6 +384,17 @@ bool run::step(const string& line)
         {
             cout << mem_.pop().s << endl;
         }
+    }
+    else if (line.rfind("print", 0) == 0)
+    {
+    if (mem_.top().s.empty())
+    {
+        cout << mem_.top().i << endl;
+    }
+    else
+    {
+        cout << mem_.top().s << endl;
+    }
     }
     else if (line.rfind("recv", 0) == 0)
     {
@@ -448,21 +410,18 @@ bool run::step(const string& line)
 
     else if (line.rfind("jmp", 0) == 0)     
     {
-        
-        string name = "";
+        string markname = "";
         int g = 4;
         while (true)
         {
             if (g < line.size())
             {
-                name += source_code_[pos_][g];
+                markname += source_code_[pos_][g];
                 g++;
             }
             else { break; }
         }
-        func_pos = func_code[name];
-        run_func = true;
-
+        pos_ = placemarks[markname];
     }
     else if (line.rfind("jne", 0) == 0) 
     {
@@ -493,7 +452,8 @@ bool run::step(const string& line)
     else if (line.rfind("   ") || line.rfind("  ")) {}
     else if (line.rfind("pass", 0) == 0) {}
 
-    else {
+    else 
+    {
         cout << "InvalidSyntex: " << line << " line:" << pos_ << endl;
         return false;
     }
