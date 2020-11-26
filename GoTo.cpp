@@ -449,7 +449,7 @@ bool run::step(const string& line)
     }
 
     // Остальное
-    else if (line.rfind("   ") || line.rfind(" ") || line.rfind("")) {}
+    else if (line.rfind("   ") || line.rfind(" ") || line.empty()) {}
     else if (line.rfind("pass", 0) == 0) {}
     else 
     {
