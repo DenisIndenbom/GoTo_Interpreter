@@ -1,13 +1,4 @@
-def func:
+: start
+int 1
 printpop
-end
-int 4
-int 4
-+
-sqrt
-jmp func
-str hello
-jmp func
-str 234
-jmp func
-jmp func 	
+jmp start
