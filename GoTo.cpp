@@ -229,22 +229,6 @@ public:
     {
         while (!stop)
         {
-            if (pos_ < source_code_.size() && source_code_[pos_].rfind(":", 0) == 0  )
-            {
-                string markname = "";
-                int g = 5;
-                while (true)
-                {
-                    if (g < source_code_[pos_].size() - 1)
-                    {
-                        markname += source_code_[pos_][g];
-                    }
-                    else break;
-                    g++;
-                }
-                placemarks[markname] = pos_;
-            }
-
             if (pos_ < source_code_.size())
             {
                 if (!step(source_code_[pos_]))
@@ -407,7 +391,21 @@ bool run::step(const string& line)
         //pos_ = source_code_.size() + 1;
         return false; 
     }
-
+    else if (line.rfind(":", 0) == 0)
+    {
+        string markname = "";
+        int g = 1;
+        while (true)
+        {
+            if (g < source_code_[pos_].size())
+            {
+                markname += source_code_[pos_][g];
+            }
+            else break;
+            g++;
+        }
+        placemarks[markname] = pos_;
+    }
     else if (line.rfind("jmp", 0) == 0)     
     {
         string markname = "";
