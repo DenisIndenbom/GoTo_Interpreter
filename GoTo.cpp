@@ -204,7 +204,6 @@ private:
     // Исполнить строку line. Если произошла блокировка, false.
     bool step(const string& line);
 
-    //map<string, typevariable*> variables;
 
 public:
     // Конструктор, инициализирующий внутренние переменные
@@ -224,7 +223,7 @@ public:
 
     }
 
-    // Выполнить следующие num_steps строк исходника (false, если закончил исполнение)
+    // Выполнение кода.
     bool exec() 
     {
         while (!stop)
@@ -388,28 +387,32 @@ bool run::step(const string& line)
     }
     else if (line == "stop")
     {
-        //pos_ = source_code_.size() + 1;
         return false; 
     }
     else if (line.rfind(":", 0) == 0)
     {
-        string markname = "";
-        int g = 1;
+        string placemarkname = "";
+        // Отсекаем символ объявдение метки
+        string symbol = ":";
+        int g = symbol.size();
+
         while (true)
         {
             if (g < source_code_[pos_].size())
             {
-                markname += source_code_[pos_][g];
+                placemarkname += source_code_[pos_][g];
             }
             else break;
             g++;
         }
-        placemarks[markname] = pos_;
+        placemarks[placemarkname] = pos_;
     }
     else if (line.rfind("jmp", 0) == 0)     
     {
         string markname = "";
-        int g = 4;
+        string command = "jmp";
+        // Отсекаем команду jmp
+        int g = command.size() + 1;
         while (true)
         {
             if (g < line.size())
