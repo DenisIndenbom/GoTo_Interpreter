@@ -251,10 +251,12 @@ public:
 bool run::step(const string& line)
 {
     // Завести переменные
-    if (line.rfind("int", 0) == 0) 
+    if (line.rfind("int", 0) == 0)
     {
-        int ch = 4;
         string number;
+        string command = "int";
+        // Отсекаем команду int
+        int ch = command.size() + 1;
         while (true)
         {
             if (ch > line.size()) { break; }
@@ -276,8 +278,10 @@ bool run::step(const string& line)
     }
     else if (line.rfind("str", 0) == 0)
     {
-        int ch = 4;
         string str;
+        string command = "str";
+        // Отсекаем команду str
+        int ch = command.size() + 1;
         while (true)
         {
             if (ch > line.size()) { break; }
