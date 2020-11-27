@@ -105,34 +105,42 @@ typevariable operator+(const typevariable& a, const typevariable& b) {
 typevariable operator-(const typevariable& a, const typevariable& b)
 {
     if (a.type != Vtype::INT || b.type != Vtype::INT)
+    {
         cout << "TypeError: string can't - integer" << endl;
         stop = true;
         return -1;
+    }
     return a.i - b.i;
 }
 
 typevariable operator/(const typevariable& a, const typevariable& b)
 {
     if (a.type != Vtype::INT || b.type != Vtype::INT)
+    {
         cout << "TypeError: string can't / integer" << endl;
         stop = true;
         return -1;
+    }
     return a.i / b.i;
 }
 typevariable operator*(const typevariable& a, const typevariable& b)
 {
-    if (a.type != Vtype::INT || b.type != Vtype::INT)
+    if (a.type != Vtype::INT || b.type != Vtype::INT) 
+    {
         cout << "TypeError: string can't - integer" << endl;
         stop = true;
         return -1;
+    }
     return a.i * b.i;
 }
 typevariable operator%(const typevariable& a, const typevariable& b)
 {
     if (a.type != Vtype::INT || b.type != Vtype::INT)
+    {
         cout << "TypeError: string can't % integer" << endl;
         stop = true;
         return -1;
+    }
     return a.i % b.i;
 }
 
@@ -349,13 +357,17 @@ bool run::step(const string& line)
     }
 
     // Сервисные функции
-    else if (line.rfind("dup", 0) == 0) {
+    else if (line.rfind("dup", 0) == 0) 
+    {
         typevariable a = mem_.top();
         mem_.push(a);
     }
-    else if (line.rfind("swap", 0) == 0) {
+    else if (line.rfind("swap", 0) == 0) 
+    {
         typevariable a = mem_.top();
+        typevariable b = mem_.top();
         mem_.push(a);
+        mem_.push(b);
     }
     else if (line.rfind("pop", 0) == 0)
     {
