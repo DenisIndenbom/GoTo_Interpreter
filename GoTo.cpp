@@ -83,8 +83,67 @@ struct typevariable
     }
 };
 
+bool operator==(const typevariable& a, const typevariable& b)
+{
+    if (a.type != b.type)
+        return false;
+
+    switch (a.type)
+    {
+    case Vtype::INT:
+        return a.i == b.i;
+
+    case Vtype::STR:
+        return a.s == b.s;
+
+    default:
+        return false;
+    }
+}
+
+bool operator!=(const typevariable& a, const typevariable& b)
+{
+    return !operator==(a, b);
+}
+
+bool operator>(const typevariable& a, const typevariable& b) 
+{
+    if (a.type != Vtype::INT || b.type != Vtype::INT)
+    {
+        return false;
+    }
+    return a.i > b.i;
+}
+
+bool operator<(const typevariable& a, const typevariable& b)
+{
+    if (a.type != Vtype::INT || b.type != Vtype::INT)
+    {
+        return false;
+    }
+    return !operator>(a,b);
+}
+
+bool operator>=(const typevariable& a, const typevariable& b)
+{
+    if (a.type != Vtype::INT || b.type != Vtype::INT)
+    {
+        return false;
+    }
+    return a.i >= b.i;
+}
+
+bool operator<=(const typevariable& a, const typevariable& b)
+{
+    if (a.type != Vtype::INT || b.type != Vtype::INT)
+    {
+        return false;
+    }
+    return !operator>=(a,b);
+}
 // Сложение (если INT) или конкатенация (если STR)
-typevariable operator+(const typevariable& a, const typevariable& b) {
+typevariable operator+(const typevariable& a, const typevariable& b)
+{
     if (a.type != b.type)
         return -1;
 
@@ -150,8 +209,6 @@ struct fixed_stack
     int back = -1;
     fixed_stack() : Stack(4096)
     {
-
-
     }
 
     void push(typevariable val)
@@ -164,6 +221,16 @@ struct fixed_stack
             return;
         }
         Stack[back] = val;
+    }
+    void pushan(int val)
+    {
+        if (back < val) 
+        {
+            cout << "StackError: index out of the range" << endl;
+            stop = true;
+            return;
+        }
+        push(Stack[back-val]);
     }
     typevariable top()
     {
@@ -212,7 +279,7 @@ private:
     // Исполнить строку line. Если произошла блокировка, false.
     bool step(const string& line);
 
-
+    void jump(const string& line);
 public:
     // Конструктор, инициализирующий внутренние переменные
     run(string fname)
@@ -254,7 +321,25 @@ public:
         return true;
     }
 };
-    
+
+void run::jump(const string& line)
+{
+    string markname = "";
+    string command = "jmp";
+    // Отсекаем команду jmp
+    int g = command.size() + 1;
+    while (true)
+    {
+        if (line[g] == ' ') { break; }
+        if (g < line.size())
+        {
+            markname += source_code_[pos_][g];
+            g++;
+        }
+        else { break; }
+    }
+    pos_ = placemarks[markname];
+}
 
 bool run::step(const string& line)
 {
@@ -373,6 +458,34 @@ bool run::step(const string& line)
     {
         mem_.pop();
     }
+    else if (line.rfind("pushan", 0) == 0)
+    {
+        // Отсекаем символ объявдение метки
+        string val;
+        string command = "pushan";
+        int g = command.size()+1;
+
+        while (true)
+        {
+            if (line[g] == ' ') { break; }
+            if (g < source_code_[pos_].size())
+            {
+                val += source_code_[pos_][g];
+            }
+            else break;
+            g++;
+        }
+        if (isnumber(val))
+        {
+            typevariable pushed = stoi(val);
+            mem_.push(pushed);
+        }
+        else
+        {
+            cout << "TypeError: it's integer not string in line " << pos_ + 1 << endl;
+            return false;
+        }
+    }   
     else if (line.rfind("printpop",0) == 0)
     {
         if (mem_.top().s.empty())
@@ -386,14 +499,14 @@ bool run::step(const string& line)
     }
     else if (line.rfind("print", 0) == 0)
     {
-    if (mem_.top().s.empty())
-    {
-        cout << mem_.top().i << endl;
-    }
-    else
-    {
-        cout << mem_.top().s << endl;
-    }
+        if (mem_.top().s.empty())
+        {
+            cout << mem_.top().i << endl;
+        }
+        else
+        {
+            cout << mem_.top().s << endl;
+        }
     }
     else if (line.rfind("recv", 0) == 0)
     {
@@ -414,6 +527,7 @@ bool run::step(const string& line)
 
         while (true)
         {
+            if (line[g] == ' ') { break; }
             if (g < source_code_[pos_].size())
             {
                 placemarkname += source_code_[pos_][g];
@@ -425,44 +539,61 @@ bool run::step(const string& line)
     }
     else if (line.rfind("jmp", 0) == 0)     
     {
-        string markname = "";
-        string command = "jmp";
-        // Отсекаем команду jmp
-        int g = command.size() + 1;
-        while (true)
-        {
-            if (g < line.size())
-            {
-                markname += source_code_[pos_][g];
-                g++;
-            }
-            else { break; }
-        }
-        pos_ = placemarks[markname];
+        jump(line);
     }
     else if (line.rfind("jne", 0) == 0) 
     {
-        
+        typevariable a = mem_.pop();
+        typevariable b = mem_.pop();
+        if (a != b) 
+        {
+            jump(line);
+        }
     }
     else if (line.rfind("jle", 0) == 0) 
     {
-        
+        typevariable a = mem_.pop();
+        typevariable b = mem_.pop();
+        if (a <= b)
+        {
+            jump(line);
+        }
     }
     else if (line.rfind("jge", 0) == 0) 
     {
-      
+        typevariable a = mem_.pop();
+        typevariable b = mem_.pop();
+        if (a >= b)
+        {
+            jump(line);
+        }
     }
     else if (line.rfind("jl", 0) == 0) 
     {
- 
+        typevariable a = mem_.pop();
+        typevariable b = mem_.pop();
+        if (a < b)
+        {
+            jump(line);
+        }
     }
     else if (line.rfind("jg", 0) == 0) 
     {
-
+        typevariable a = mem_.pop();
+        typevariable b = mem_.pop();
+        if (a > b)
+        {
+            jump(line);
+        }
     }
     else if (line.rfind("je", 0) == 0) 
     {
-
+        typevariable a = mem_.pop();
+        typevariable b = mem_.pop();
+        if (a == b)
+        {
+            jump(line);
+        }
     }
 
     // Остальное
