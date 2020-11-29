@@ -222,7 +222,7 @@ struct fixed_stack
         }
         Stack[back] = val;
     }
-    void pushan(int val)
+    void pushN(int val)
     {
         if (back < val) 
         {
@@ -247,9 +247,9 @@ struct fixed_stack
     {
         if (back > -1)
         {
-            typevariable PopNum = Stack[back];
+            typevariable poped = Stack[back];
             back -= 1;
-            return PopNum;
+            return poped;
 
         }
         else
@@ -258,9 +258,6 @@ struct fixed_stack
             stop = true;
             return -1;
         }
-        
-        
-
     }
 };
 class run 
@@ -279,7 +276,7 @@ private:
     // Исполнить строку line. Если произошла блокировка, false.
     bool step(const string& line);
 
-    void jump(const string& line);
+    void jump(const string& line, const string& command="jmp");
 public:
     // Конструктор, инициализирующий внутренние переменные
     run(string fname)
@@ -296,6 +293,28 @@ public:
             source_code_.push_back(buf);
         }
 
+        for (int pos = 0; pos < source_code_.size();pos++)
+        {
+            string line = source_code_[pos];
+            if (line.rfind(":", 0) == 0)
+            {
+                string placemarkname = "";
+                // Отсекаем символ объявдение метки
+                string symbol = ":";
+                int g = symbol.size();
+
+                while (true)
+                {
+                    if (g < source_code_[pos].size())
+                    {
+                        placemarkname += source_code_[pos_][g];
+                    }
+                    else break;
+                    g++;
+                }
+                placemarks[placemarkname] = pos;
+            }
+        }
     }
 
     // Выполнение кода.
@@ -322,10 +341,9 @@ public:
     }
 };
 
-void run::jump(const string& line)
+void run::jump(const string& line, const string& command)
 {
     string markname = "";
-    string command = "jmp";
     // Отсекаем команду jmp
     int g = command.size() + 1;
     while (true)
@@ -382,7 +400,8 @@ bool run::step(const string& line)
             str += line[ch];
             ch++;
         }
-        mem_.push(str);
+        typevariable pushed = str;
+        mem_.push(pushed);
     }
 
     
@@ -458,16 +477,15 @@ bool run::step(const string& line)
     {
         mem_.pop();
     }
-    else if (line.rfind("pushan", 0) == 0)
+    else if (line.rfind("pushN", 0) == 0)
     {
-        // Отсекаем символ объявдение метки
+        // Отсекаем команду
         string val;
-        string command = "pushan";
+        string command = "pushN";
         int g = command.size()+1;
 
         while (true)
         {
-            if (line[g] == ' ') { break; }
             if (g < source_code_[pos_].size())
             {
                 val += source_code_[pos_][g];
@@ -477,8 +495,7 @@ bool run::step(const string& line)
         }
         if (isnumber(val))
         {
-            typevariable pushed = stoi(val);
-            mem_.push(pushed);
+            mem_.pushN(stoi(val));
         }
         else
         {
@@ -518,86 +535,66 @@ bool run::step(const string& line)
     {
         return false; 
     }
-    else if (line.rfind(":", 0) == 0)
-    {
-        string placemarkname = "";
-        // Отсекаем символ объявдение метки
-        string symbol = ":";
-        int g = symbol.size();
-
-        while (true)
-        {
-            if (line[g] == ' ') { break; }
-            if (g < source_code_[pos_].size())
-            {
-                placemarkname += source_code_[pos_][g];
-            }
-            else break;
-            g++;
-        }
-        placemarks[placemarkname] = pos_;
-    }
-    else if (line.rfind("jmp", 0) == 0)     
+    else if (line.rfind("jmp", 0) == 0)
     {
         jump(line);
     }
-    else if (line.rfind("jne", 0) == 0) 
+    else if (line.rfind("jne", 0) == 0)
     {
         typevariable a = mem_.pop();
         typevariable b = mem_.pop();
-        if (a != b) 
+        if (a != b)
         {
-            jump(line);
+            jump(line,"jne");
         }
     }
-    else if (line.rfind("jle", 0) == 0) 
+    else if (line.rfind("jle", 0) == 0)
     {
         typevariable a = mem_.pop();
         typevariable b = mem_.pop();
         if (a <= b)
         {
-            jump(line);
+            jump(line, "jle");
         }
     }
-    else if (line.rfind("jge", 0) == 0) 
+    else if (line.rfind("jge", 0) == 0)
     {
         typevariable a = mem_.pop();
         typevariable b = mem_.pop();
         if (a >= b)
         {
-            jump(line);
+            jump(line, "jge");
         }
     }
-    else if (line.rfind("jl", 0) == 0) 
+    else if (line.rfind("jl", 0) == 0)
     {
         typevariable a = mem_.pop();
         typevariable b = mem_.pop();
         if (a < b)
         {
-            jump(line);
+            jump(line,"jl");
         }
     }
-    else if (line.rfind("jg", 0) == 0) 
+    else if (line.rfind("jg", 0) == 0)
     {
         typevariable a = mem_.pop();
         typevariable b = mem_.pop();
         if (a > b)
         {
-            jump(line);
+            jump(line,"jg");
         }
     }
-    else if (line.rfind("je", 0) == 0) 
+    else if (line.rfind("je", 0) == 0)
     {
         typevariable a = mem_.pop();
         typevariable b = mem_.pop();
         if (a == b)
         {
-            jump(line);
+            jump(line,"je");
         }
     }
-
     // Остальное
-    else if (line.rfind("   ") || line.rfind(" ") || line.empty()) {}
+    //else if (line.empty()) {}
     else if (line.rfind("pass", 0) == 0) {}
     else 
     {
