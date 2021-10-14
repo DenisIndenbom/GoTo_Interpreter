@@ -1,2 +1,2 @@
-# GoTo_Interpreter
+# GoTo Interpreter
 It's assembler like language.
