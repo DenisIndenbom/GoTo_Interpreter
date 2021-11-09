@@ -1,8 +1,4 @@
-str meow
-str meow
 :start
-pop
-pop
-str meow
-str meow
-je start
+int 1
+printpop
+jmp start
